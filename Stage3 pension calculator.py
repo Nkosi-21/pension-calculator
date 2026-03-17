@@ -37,7 +37,7 @@ st.markdown("""
 
 @st.cache_resource
 def load_model():
-    # Model is loaded relative to this script — works locally AND on Streamlit Cloud
+    # Relative path — works locally AND on Streamlit Cloud
     MODEL_PATH = os.path.join(os.path.dirname(__file__), "Final_Pension_Model.pkl")
     if not os.path.exists(MODEL_PATH):
         st.error(f"Model file not found at: {MODEL_PATH}")
@@ -99,6 +99,7 @@ def main():
         st.header("Advanced Features")
         enable_mc = st.checkbox("Enable Market Volatility (Monte Carlo)")
         vol_inv = st.number_input("Investment Volatility (%)", value=2.0) / 100 if enable_mc else 0
+        vol_inf = st.number_input("Inflation Volatility (%)", value=2.0) / 100 if enable_mc else 0
         n_sims  = st.selectbox("No. of Simulations", [500, 1000]) if enable_mc else 0
 
         run_btn = st.button("Generate Report")
@@ -111,11 +112,12 @@ def main():
             sim_results = []
             for _ in range(n_sims):
                 s_inv  = inv_rate + np.random.normal(0, vol_inv)
+                s_inf  = inf_rate + np.random.normal(0, vol_inf)
                 s_pred = predict_benefit(
                     model, gender,
                     current_age, retire_age, duration,
                     salary, prev_bal, contrib,
-                    s_inv, inf_rate
+                    s_inv, s_inf
                 )
                 sim_results.append(max(0, s_pred))
             final_pred = np.mean(sim_results)
@@ -134,7 +136,7 @@ def main():
         <div class="benefit-box">
             <p style="color:#1a3a5c; font-weight:bold; margin-bottom:5px;">ML-Projected Total Benefit at Retirement</p>
             <div class="benefit-value">${final_pred:,.2f}</div>
-            {"<small>(Adjusted for market volatility via Monte Carlo)</small>" if enable_mc else ""}
+            {"<small>(Adjusted for investment and inflation volatility via Monte Carlo)</small>" if enable_mc else ""}
         </div>
         """, unsafe_allow_html=True)
 
