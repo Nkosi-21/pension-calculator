@@ -154,13 +154,25 @@ def main():
             annual_draw = salary * rate
             years       = annuity_pool / annual_draw if annual_draw > 0 else 0
             with col:
-                st.markdown(f"""
-                <div class="metric-box">
-                    <div style="font-size:0.9rem;">Maintain {label}</div>
-                    <div style="font-size:1.6rem; font-weight:bold;">{years:.1f} Years</div>
-                    <div style="font-size:0.8rem;">(${annual_draw:,.0f}/year)</div>
-                </div>
-                """, unsafe_allow_html=True)
+                if annual_draw > annuity_pool:
+                    st.markdown(f"""
+                    <div class="metric-box" style="border: 2px solid #ff4444;">
+                        <div style="font-size:0.9rem;">Maintain {label}</div>
+                        <div style="font-size:1.6rem; font-weight:bold; color:#ff4444;">⛔ Not Viable</div>
+                        <div style="font-size:0.8rem;">(${annual_draw:,.0f}/year)</div>
+                        <div style="font-size:0.75rem; color:#ff4444; margin-top:5px;">
+                            Annual withdrawal (${annual_draw:,.0f}) exceeds your annuity pool (${annuity_pool:,.0f})
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                    <div class="metric-box">
+                        <div style="font-size:0.9rem;">Maintain {label}</div>
+                        <div style="font-size:1.6rem; font-weight:bold;">{years:.1f} Years</div>
+                        <div style="font-size:0.8rem;">(${annual_draw:,.0f}/year)</div>
+                    </div>
+                    """, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
