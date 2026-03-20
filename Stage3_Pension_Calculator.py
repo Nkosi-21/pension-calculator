@@ -37,8 +37,7 @@ st.markdown("""
 
 @st.cache_resource
 def load_model():
-    BASE_PATH  = r"C:\Users\User\Desktop\4.2\Model Build up"
-    MODEL_PATH = os.path.join(BASE_PATH, "Final_Pension_Model.pkl")
+    MODEL_PATH = "Final_Pension_Model.pkl"
     if not os.path.exists(MODEL_PATH):
         st.error(f"Model file not found at: {MODEL_PATH}")
         return None
